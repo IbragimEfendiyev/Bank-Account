@@ -5,7 +5,6 @@ import com.example.bank_account.dto.CardResponse;
 import com.example.bank_account.dto.RevealCardResponse;
 import com.example.bank_account.dto.TransferRequest;
 import com.example.bank_account.entity.Card;
-import com.example.bank_account.entity.CardStatus;
 import com.example.bank_account.entity.User;
 import com.example.bank_account.repository.CardRepository;
 import com.example.bank_account.repository.UserRepository;
@@ -25,14 +24,7 @@ public class CardService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private void ensureCardUsableForOperation(Card card, String messagePrefix) {
-        if (card.isDeleted()) {
-            throw new IllegalStateException(messagePrefix + ": карта удалена");
-        }
-        if (card.getStatus() != CardStatus.ACTIVE) {
-            throw new IllegalStateException(messagePrefix + ": карта не активна (" + card.getStatus() + ")");
-        }
-    }
+
 
     private void ensureCardExistsBasics(Card card) {
         if (card.getBalance() == null) card.setBalance(BigDecimal.ZERO);
@@ -83,10 +75,10 @@ public class CardService {
 
 
         // 2) Ищем карту, но сразу проверяем что она принадлежит ownerId
-        Card card = cardRepository.findAllByOwnerIdAndDeletedFalse(cardId, ownerId)
+        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
                 .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
 
-        ensureCardUsableForOperation(card, "Пополнение");
+
 
         // 3) Берём старый баланс
         BigDecimal oldBalance = card.getBalance();
