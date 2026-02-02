@@ -1,13 +1,15 @@
 package com.example.bank_account.controller;
 
-import com.example.bank_account.dto.CardResponse;
-import com.example.bank_account.dto.TopUpRequest;
-import com.example.bank_account.dto.TransferRequest;
+import com.example.bank_account.dto.*;
 import com.example.bank_account.entity.Card;
 import com.example.bank_account.entity.User;
+import com.example.bank_account.repository.UserRepository;
 import com.example.bank_account.security.CurrentUserService;
 import com.example.bank_account.service.CardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,7 @@ public class CardController {
 
     private final CardService cardService;
     private final CurrentUserService currentUserService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public List<CardResponse> myCards() {
@@ -45,6 +48,24 @@ public class CardController {
     public void transfer(@RequestBody TransferRequest request) {
         User user = currentUserService.requireUser();
         cardService.transfer(user.getId(), request);
+    }
+
+    @PostMapping("/{cardId}/reveal")
+    public ResponseEntity<RevealCardResponse> reveal(
+            @PathVariable Long cardId,
+            @Valid @RequestBody RevealCardRequest req,
+            Authentication auth
+    ) {
+
+        String username = auth.getName();
+
+        Long ownerId = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("User not found"))
+                .getId();
+
+
+        RevealCardResponse resp = cardService.revealCard(ownerId, cardId, req.password());
+        return ResponseEntity.ok(resp);
     }
 
 

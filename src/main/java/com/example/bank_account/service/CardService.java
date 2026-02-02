@@ -2,11 +2,13 @@ package com.example.bank_account.service;
 
 import com.example.bank_account.card.CardGenerator;
 import com.example.bank_account.dto.CardResponse;
+import com.example.bank_account.dto.RevealCardResponse;
 import com.example.bank_account.dto.TransferRequest;
 import com.example.bank_account.entity.Card;
 import com.example.bank_account.entity.User;
 import com.example.bank_account.repository.CardRepository;
 import com.example.bank_account.repository.UserRepository;
+import com.example.bank_account.security.SecurityBeans;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
+    private final SecurityBeans passwordEncoder;
 
     @Transactional
     public List<CardResponse> myCards(Long ownerId) {
@@ -124,6 +127,37 @@ public class CardService {
         // 4) сохраняем
         cardRepository.save(from);
         cardRepository.save(to);
+    }
+
+
+    @Transactional
+    public RevealCardResponse revealCard(Long ownerId, Long cardId, String rawPassword) {
+
+        if (rawPassword == null || rawPassword.isBlank()) {
+            throw new IllegalArgumentException("Пароль обязателен");
+        }
+
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
+
+        if (!passwordEncoder.passwordEncoder().matches(rawPassword, user.getPassword())) {
+            throw new IllegalStateException("Неверный пароль");
+        }
+
+        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
+                .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
+
+//        // если хочешь запретить показ для BLOCKED/CLOSED:
+//        if (card.getStatus() != CardStatus.ACTIVE) {
+//            throw new IllegalStateException("Карта не активна");
+//        }
+
+        return new RevealCardResponse(
+                card.getId(),
+                card.getCardNumber(),
+                card.getExpireDate(),
+                card.getCvv()
+        );
     }
 
 
