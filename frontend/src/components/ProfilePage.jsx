@@ -1,6 +1,8 @@
 import CardList from './CardList'
 
 export default function ProfilePage({ user, token, onLogout }) {
+
+
   return (
     <div className="app">
       <div className="card profile">
@@ -10,11 +12,13 @@ export default function ProfilePage({ user, token, onLogout }) {
         </div>
 
         <p className="user-info">
-          <strong>Пользователь:</strong> {String(user?.principal)}
+          <strong>Пользователь: Hello </strong> {String(user?.principal)
+  .charAt(0)
+  .toUpperCase() + String(user?.principal).slice(1) + "!"}
         </p>
         <p className="user-info">
           <strong>Роли:</strong>{' '}
-          {user?.authorities?.map((a) => a.authority).join(', ') || '—'}
+          {user.authorities?.some(a => a.authority === 'ROLE_USER') ? 'Пользователь' : 'Администратор'}
         </p>
         <CardList token={token} />
 

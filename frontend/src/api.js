@@ -90,3 +90,22 @@ export async function transfer(token, fromCardId, toCardNumber, amount) {
     throw new Error(text || 'Не удалось выполнить перевод')
   }
 }
+
+/**
+ * Показать полные данные карты (номер, срок, CVV) по паролю аккаунта.
+ * Бэкенд: POST /api/cards/{cardId}/reveal, тело { password: string }.
+ * Возвращает { id, cardNumber, expireDate, cvv }.
+ */
+export async function revealCard(token, cardId, password) {
+  const res = await fetch(`${API}/api/cards/${cardId}/reveal`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders(token),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password: String(password) }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.message || 'Неверный пароль')
+  return data
+}

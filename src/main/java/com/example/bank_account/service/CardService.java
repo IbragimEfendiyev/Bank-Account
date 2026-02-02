@@ -5,12 +5,13 @@ import com.example.bank_account.dto.CardResponse;
 import com.example.bank_account.dto.RevealCardResponse;
 import com.example.bank_account.dto.TransferRequest;
 import com.example.bank_account.entity.Card;
+import com.example.bank_account.entity.CardStatus;
 import com.example.bank_account.entity.User;
 import com.example.bank_account.repository.CardRepository;
 import com.example.bank_account.repository.UserRepository;
-import com.example.bank_account.security.SecurityBeans;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,7 +23,21 @@ public class CardService {
 
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
-    private final SecurityBeans passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    private void ensureCardUsableForOperation(Card card, String messagePrefix) {
+        if (card.isDeleted()) {
+            throw new IllegalStateException(messagePrefix + ": карта удалена");
+        }
+        if (card.getStatus() != CardStatus.ACTIVE) {
+            throw new IllegalStateException(messagePrefix + ": карта не активна (" + card.getStatus() + ")");
+        }
+    }
+
+    private void ensureCardExistsBasics(Card card) {
+        if (card.getBalance() == null) card.setBalance(BigDecimal.ZERO);
+    }
+
 
     @Transactional
     public List<CardResponse> myCards(Long ownerId) {
@@ -68,8 +83,10 @@ public class CardService {
 
 
         // 2) Ищем карту, но сразу проверяем что она принадлежит ownerId
-        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
+        Card card = cardRepository.findAllByOwnerIdAndDeletedFalse(cardId, ownerId)
                 .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
+
+        ensureCardUsableForOperation(card, "Пополнение");
 
         // 3) Берём старый баланс
         BigDecimal oldBalance = card.getBalance();
@@ -90,9 +107,13 @@ public class CardService {
     @Transactional
     public void transfer(Long ownerId, TransferRequest req) {
 
+
+
         if (req.amount() == null || req.amount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Сумма должна быть больше 0");
         }
+
+
         if (req.fromCardId() == null) {
             throw new IllegalArgumentException("fromCardId обязателен");
         }
@@ -129,7 +150,6 @@ public class CardService {
         cardRepository.save(to);
     }
 
-
     @Transactional
     public RevealCardResponse revealCard(Long ownerId, Long cardId, String rawPassword) {
 
@@ -137,21 +157,20 @@ public class CardService {
             throw new IllegalArgumentException("Пароль обязателен");
         }
 
+        // 1) Берём пользователя
         User user = userRepository.findById(ownerId)
                 .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
 
-        if (!passwordEncoder.passwordEncoder().matches(rawPassword, user.getPassword())) {
+        // 2) Проверяем пароль (raw vs hash)
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new IllegalStateException("Неверный пароль");
         }
 
+        // 3) Берём карту ТОЛЬКО этого пользователя
         Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
                 .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
 
-//        // если хочешь запретить показ для BLOCKED/CLOSED:
-//        if (card.getStatus() != CardStatus.ACTIVE) {
-//            throw new IllegalStateException("Карта не активна");
-//        }
-
+        // 4) Возвращаем полные данные
         return new RevealCardResponse(
                 card.getId(),
                 card.getCardNumber(),

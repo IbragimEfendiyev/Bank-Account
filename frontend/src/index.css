@@ -239,6 +239,20 @@ body {
   min-width: 0;
 }
 
+.bank-card--clickable {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.bank-card--clickable:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bank-card--clickable:focus {
+  outline: 2px solid #1a73e8;
+  outline-offset: 2px;
+}
+
 .bank-card__top {
   margin-bottom: 1rem;
 }

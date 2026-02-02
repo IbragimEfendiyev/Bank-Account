@@ -4,9 +4,10 @@
  * Вызывается API topUp(cardId, amount), список карт обновляется, модалка закрывается.
  */
 import { useState, useEffect } from 'react'
-import { getMyCards, orderCard, topUp, transfer } from '../api'
+import { getMyCards, orderCard, topUp, transfer, revealCard } from '../api'
 import TopUpModal from '../modal/TopUpModal'
 import TransferModal from '../modal/TransferModal'
+import CardDetailsModal from '../modal/CardDetailsModal'
 
 function formatCardNumber(cardNumber) {
   if (!cardNumber || cardNumber.length < 4) return '•• •• ••••'
@@ -39,6 +40,10 @@ export default function CardList({ token }) {
   // Модалка перевода: с какой карты переводим (null = закрыта)
   const [cardForTransfer, setCardForTransfer] = useState(null)
   const [transferLoading, setTransferLoading] = useState(false)
+
+  // Модалка просмотра полных данных карты (открывается по клику на карту)
+  const [cardForDetails, setCardForDetails] = useState(null)
+  const [detailsLoading, setDetailsLoading] = useState(false)
 
   const loadCards = () => {
     if (!token) return
@@ -99,6 +104,25 @@ export default function CardList({ token }) {
     setCardForTransfer(null)
   }
 
+  const openCardDetailsModal = (c) => {
+    setError('')
+    setCardForDetails(c)
+  }
+
+  const closeCardDetailsModal = () => {
+    setCardForDetails(null)
+  }
+
+  const handleReveal = async (cardId, password) => {
+    setDetailsLoading(true)
+    try {
+      const data = await revealCard(token, cardId, password)
+      return data
+    } finally {
+      setDetailsLoading(false)
+    }
+  }
+
   // Перевод: запрос на бэк; при успехе обновляем список и закрываем модалку.
   // Ошибка (например «Карта получателя не найдена») обрабатывается в TransferModal.
   const handleTransfer = async (toCardNumber, amount) => {
@@ -137,7 +161,15 @@ export default function CardList({ token }) {
       ) : (
         <ul className="cards-list">
           {cards.map((c) => (
-            <li key={c.id} className="bank-card">
+            <li
+              key={c.id}
+              className="bank-card bank-card--clickable"
+              onClick={() => openCardDetailsModal(c)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && openCardDetailsModal(c)}
+              aria-label={`Карта •••• ${c.cardNumber?.slice(-4) || ''}. Нажмите, чтобы показать полные данные`}
+            >
               <div className="bank-card__top">
                 <div className="bank-card__brand-row">
                   <span className="bank-card__brand">Mastercard</span>
@@ -151,7 +183,7 @@ export default function CardList({ token }) {
                 <span className="bank-card__badge bank-card__badge--expiry">{formatDate(c.expireDate)}</span>
                 <span className="bank-card__badge bank-card__badge--pay">Apple Pay</span>
               </div>
-              <div className="bank-card__actions">
+              <div className="bank-card__actions" onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   className="bank-card__btn"
@@ -193,6 +225,14 @@ export default function CardList({ token }) {
         sourceCard={cardForTransfer}
         onTransfer={handleTransfer}
         loading={transferLoading}
+      />
+
+      <CardDetailsModal
+        open={!!cardForDetails}
+        onClose={closeCardDetailsModal}
+        card={cardForDetails}
+        onReveal={handleReveal}
+        loading={detailsLoading}
       />
     </section>
   )
