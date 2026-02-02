@@ -5,6 +5,7 @@ import com.example.bank_account.dto.CardResponse;
 import com.example.bank_account.dto.RevealCardResponse;
 import com.example.bank_account.dto.TransferRequest;
 import com.example.bank_account.entity.Card;
+import com.example.bank_account.entity.CardStatus;
 import com.example.bank_account.entity.User;
 import com.example.bank_account.repository.CardRepository;
 import com.example.bank_account.repository.UserRepository;
@@ -23,6 +24,18 @@ public class CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private void ensureCanDoMoneyOperation(Card card, String prefix) {
+        if (card.isDeleted()) {
+            throw new IllegalStateException(prefix + ": карта удалена");
+        }
+        if (card.getStatus() == CardStatus.BLOCKED) {
+            throw new IllegalStateException(prefix + ": карта заблокирована");
+        }
+        if (card.getStatus() == CardStatus.CLOSED) {
+            throw new IllegalStateException(prefix + ": карта закрыта");
+        }
+    }
 
 
 
@@ -68,6 +81,10 @@ public class CardService {
     @Transactional
     public CardResponse topUp(Long ownerId, Long cardId, BigDecimal amount) {
 
+        Card card = cardRepository.findByIdAndOwnerIdAndDeletedFalse(cardId, ownerId)
+                .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
+
+        ensureCanDoMoneyOperation(card, "Пополнение");
         // 1) Проверка суммы
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Сумма должна быть больше 0");
@@ -75,8 +92,9 @@ public class CardService {
 
 
         // 2) Ищем карту, но сразу проверяем что она принадлежит ownerId
-        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
-                .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
+//        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
+//                .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
+
 
 
 
@@ -99,6 +117,17 @@ public class CardService {
     @Transactional
     public void transfer(Long ownerId, TransferRequest req) {
 
+        Card from = cardRepository.findByIdAndOwnerIdAndDeletedFalse(req.fromCardId(), ownerId)
+                .orElseThrow(() -> new IllegalStateException("Карта списания не найдена или не ваша"));
+
+        ensureCanDoMoneyOperation(from, "Перевод (списание)");
+
+        Card to = cardRepository.findByCardNumberAndDeletedFalse(req.toCardNumber())
+                .orElseThrow(() -> new IllegalStateException("Карта получателя не найдена"));
+
+        ensureCanDoMoneyOperation(to, "Перевод (получатель)");
+
+
 
 
         if (req.amount() == null || req.amount().compareTo(BigDecimal.ZERO) <= 0) {
@@ -113,13 +142,13 @@ public class CardService {
             throw new IllegalArgumentException("toCardNumber обязателен");
         }
 
-        // 1) источник — только твоя карта
-        Card from = cardRepository.findByIdAndOwnerId(req.fromCardId(), ownerId)
-                .orElseThrow(() -> new IllegalStateException("Карта списания не найдена или не ваша"));
-
-        // 2) получатель — любая карта
-        Card to = cardRepository.findByCardNumber(req.toCardNumber())
-                .orElseThrow(() -> new IllegalStateException("Карта получателя не найдена"));
+//        // 1) источник — только твоя карта
+//        Card from = cardRepository.findByIdAndOwnerId(req.fromCardId(), ownerId)
+//                .orElseThrow(() -> new IllegalStateException("Карта списания не найдена или не ваша"));
+//
+//        // 2) получатель — любая карта
+//        Card to = cardRepository.findByCardNumber(req.toCardNumber())
+//                .orElseThrow(() -> new IllegalStateException("Карта получателя не найдена"));
 
         // (опционально) запрет перевода на ту же карту
         if (from.getId().equals(to.getId())) {

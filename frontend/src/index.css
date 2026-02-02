@@ -361,6 +361,75 @@ body {
   flex-shrink: 0;
 }
 
+/* Админ-панель: список всех карт */
+.admin-cards {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.admin-cards__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-cards__header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.admin-cards__error {
+  margin-bottom: 0.5rem;
+}
+
+.admin-cards__table {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.admin-cards__row {
+  display: grid;
+  grid-template-columns: 36px 1.2fr 1fr 0.85fr 0.9fr 2fr;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.admin-cards__row--head {
+  font-weight: 600;
+  color: #555;
+  background: transparent;
+}
+
+.admin-cards__actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-cards__btn {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.7rem;
+}
+
+.admin-cards__btn--danger {
+  border-color: #dc2626;
+  color: #b91c1c;
+}
+
+.admin-cards__btn--danger:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #e0e0e0;

@@ -39,6 +39,16 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User owner;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CardStatus status = CardStatus.ACTIVE;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    private Instant blockedAt;
+    private Instant closedAt;
+
 
 }
 

@@ -63,7 +63,11 @@ export async function topUp(token, cardId, amount) {
     },
     body: JSON.stringify({ amount: Number(amount) }),
   })
-  if (!res.ok) throw new Error('Не удалось пополнить карту')
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const msg = data.message || (res.status === 401 ? 'Сессия истекла, войдите снова' : 'Не удалось пополнить карту')
+    throw new Error(msg)
+  }
   return res.json()
 }
 
@@ -108,4 +112,48 @@ export async function revealCard(token, cardId, password) {
   const data = await res.json().catch(() => ({}))
   if (!res.ok) throw new Error(data.message || 'Неверный пароль')
   return data
+}
+
+// ===== Админ: управление всеми картами =====
+// Бэк: GET /admin/cards → CardAdminDto[] (id, ownerUsername, maskedNumber, status, balance)
+// PATCH /admin/cards/{id}/block, PATCH .../unblock, DELETE /admin/cards/{id}
+
+export async function getAllCardsAdmin(token) {
+  const res = await fetch(`${API}/admin/cards`, {
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error('Нет доступа или не удалось загрузить карты')
+  return res.json()
+}
+
+export async function blockCardAdmin(token, cardId) {
+  const res = await fetch(`${API}/admin/cards/${cardId}/block`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error('Не удалось заблокировать карту')
+}
+
+export async function unblockCardAdmin(token, cardId) {
+  const res = await fetch(`${API}/admin/cards/${cardId}/unblock`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error('Не удалось разблокировать карту')
+}
+
+export async function closeCardAdmin(token, cardId) {
+  const res = await fetch(`${API}/admin/cards/${cardId}/close`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error('Не удалось закрыть карту')
+}
+
+export async function deleteCardAdmin(token, cardId) {
+  const res = await fetch(`${API}/admin/cards/${cardId}`, {
+    method: 'DELETE',
+    headers: authHeaders(token),
+  })
+  if (!res.ok) throw new Error('Не удалось удалить карту')
 }
