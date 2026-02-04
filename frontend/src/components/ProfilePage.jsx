@@ -1,14 +1,34 @@
 import CardList from './CardList'
 import AdminCardsPanel from './AdminCardsPanel'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getMyCards, getAllCardsAdmin } from '../api'
 
 export default function ProfilePage({ user, token, onLogout }) {
+  const [myCards, setMyCards] = useState([])
+  const [adminCards, setAdminCards] = useState([])
 
   const isAdmin = user?.authorities?.some((a) => a.authority === 'ROLE_ADMIN')
+
   const displayName =
-    String(user?.principal ?? '')
-      .charAt(0)
-      .toUpperCase() + String(user?.principal ?? '').slice(1)
+    String(user?.principal ?? '').charAt(0).toUpperCase() +
+    String(user?.principal ?? '').slice(1)
+
+  const loadMy = async () => {
+    if (!token) return
+    const data = await getMyCards(token)
+    setMyCards(data)
+  }
+
+  const loadAdmin = async () => {
+    if (!token || !isAdmin) return
+    const data = await getAllCardsAdmin(token)
+    setAdminCards(data)
+  }
+
+  useEffect(() => {
+    loadMy()
+    loadAdmin()
+  }, [token, isAdmin])
 
   return (
     <div className="app">
@@ -23,14 +43,28 @@ export default function ProfilePage({ user, token, onLogout }) {
         <p className="user-info">
           <strong>Пользователь: Hello </strong> {displayName}!
         </p>
+
         <p className="user-info">
-          <strong>Роли:</strong>{' '}
-          {isAdmin ? 'Администратор' : 'Пользователь'}
+          <strong>Роли:</strong> {isAdmin ? 'Администратор' : 'Пользователь'}
         </p>
 
-        <CardList token={token} />
+        {/* ✅ тут только мои карты */}
+<CardList
+  cards={myCards}
+  setCards={setMyCards}
+  token={token}
+/>
 
-        {isAdmin && <AdminCardsPanel  token={token} />}
+{isAdmin && (
+  <AdminCardsPanel
+    cards={adminCards}
+    setAdminCards={setAdminCards}
+    token={token}
+    reloadAdmin={loadAdmin}
+    reloadMy={loadMy}
+  />
+)}
+
       </div>
     </div>
   )

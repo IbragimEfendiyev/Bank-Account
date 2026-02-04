@@ -6,31 +6,33 @@ import {
   deleteCardAdmin,
 } from '../api'
 
-// Бэк возвращает CardAdminDto: id, ownerUsername, maskedNumber, status, balance
-// status: ACTIVE | BLOCKED | CLOSED
 function statusLabel(status) {
   if (status === 'BLOCKED') return 'Заблокирована'
   return 'Активна'
 }
 
-export default function AdminCardsPanel({ token }) {
-  const [cards, setCards] = useState([])
+export default function AdminCardsPanel({
+  token,
+  cards,
+  setAdminCards,
+  reloadMy,          // <-- чтобы обновить CardList (мои карты)
+}) {
   const [loading, setLoading] = useState(true)
   const [actionCardId, setActionCardId] = useState(null)
   const [error, setError] = useState('')
 
-  const load = () => {
+  const loadAdmin = () => {
     if (!token) return
     setError('')
     setLoading(true)
     getAllCardsAdmin(token)
-      .then(setCards)
+      .then(setAdminCards) // <-- ВАЖНО: теперь обновляем state в ProfilePage
       .catch((err) => setError(err.message || 'Не удалось загрузить карты'))
       .finally(() => setLoading(false))
   }
 
   useEffect(() => {
-    load()
+    loadAdmin()
   }, [token])
 
   const runAction = async (cardId, fn) => {
@@ -38,15 +40,14 @@ export default function AdminCardsPanel({ token }) {
     setError('')
     try {
       await fn()
-      load()
+      loadAdmin()     // обновить админ-таблицу
+      reloadMy?.()    // обновить мои карты (CardList)
     } catch (err) {
       setError(err.message || 'Ошибка операции')
     } finally {
       setActionCardId(null)
     }
   }
-
-
 
   if (!token) return null
 
@@ -57,7 +58,7 @@ export default function AdminCardsPanel({ token }) {
         <button
           type="button"
           className="btn btn-outline"
-          onClick={load}
+          onClick={loadAdmin}
           disabled={loading}
         >
           Обновить
@@ -80,6 +81,7 @@ export default function AdminCardsPanel({ token }) {
             <span>Баланс</span>
             <span>Действия</span>
           </div>
+
           {cards.map((c) => (
             <div key={c.id} className="admin-cards__row">
               <span>{c.id}</span>
@@ -92,38 +94,39 @@ export default function AdminCardsPanel({ token }) {
                 })}{' '}
                 ₽
               </span>
+
               <span className="admin-cards__actions">
                 <button
                   type="button"
                   className="btn btn-outline admin-cards__btn"
                   disabled={
-                    actionCardId === c.id || c.status === 'BLOCKED' || c.status === 'CLOSED'
+                    actionCardId === c.id ||
+                    c.status === 'BLOCKED' ||
+                    c.status === 'CLOSED'
                   }
-                  onClick={() =>
-                    runAction(c.id, () => blockCardAdmin(token, c.id))
-                  }
+                  onClick={() => runAction(c.id, () => blockCardAdmin(token, c.id))}
                 >
                   Блок
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-outline admin-cards__btn"
                   disabled={
-                    actionCardId === c.id || c.status === 'ACTIVE' || c.status === 'CLOSED'
+                    actionCardId === c.id ||
+                    c.status === 'ACTIVE' ||
+                    c.status === 'CLOSED'
                   }
-                  onClick={() =>
-                    runAction(c.id, () => unblockCardAdmin(token, c.id))
-                  }
+                  onClick={() => runAction(c.id, () => unblockCardAdmin(token, c.id))}
                 >
                   Разблок
                 </button>
+
                 <button
                   type="button"
                   className="btn btn-outline admin-cards__btn admin-cards__btn--danger"
                   disabled={actionCardId === c.id}
-                  onClick={() =>
-                    runAction(c.id, () => deleteCardAdmin(token, c.id))
-                  }
+                  onClick={() => runAction(c.id, () => deleteCardAdmin(token, c.id))}
                 >
                   Удалить
                 </button>

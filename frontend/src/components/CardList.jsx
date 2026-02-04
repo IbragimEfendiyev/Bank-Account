@@ -27,8 +27,7 @@ function formatBalance(balance) {
   return Number(balance).toLocaleString('ru-RU', { minimumFractionDigits: 2 })
 }
 
-export default function CardList({ token }) {
-  const [cards, setCards] = useState([])
+export default function CardList({token , cards, setCards }) {
   const [loading, setLoading] = useState(true)
   const [ordering, setOrdering] = useState(false)
   const [error, setError] = useState('')
@@ -45,14 +44,16 @@ export default function CardList({ token }) {
   const [cardForDetails, setCardForDetails] = useState(null)
   const [detailsLoading, setDetailsLoading] = useState(false)
 
-  const loadCards = () => {
-    if (!token) return
-    setError('')
-    getMyCards(token)
-      .then(setCards)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
-  }
+const loadCards = () => {
+  if (!token) return
+  setError('')
+  setLoading(true)              // <- добавь, чтобы не зависало
+  getMyCards(token)
+    .then(setCards)             // <- setCards теперь из props
+    .catch((err) => setError(err.message))
+    .finally(() => setLoading(false))
+}
+
 
   useEffect(() => {
     loadCards()
