@@ -47,7 +47,6 @@ public class Card {
     private boolean deleted = false;
 
     private Instant blockedAt;
-    private Instant closedAt;
 
 
 }

@@ -142,18 +142,18 @@ export async function unblockCardAdmin(token, cardId) {
   if (!res.ok) throw new Error('Не удалось разблокировать карту')
 }
 
-export async function closeCardAdmin(token, cardId) {
-  const res = await fetch(`${API}/admin/cards/${cardId}/close`, {
-    method: 'PATCH',
-    headers: authHeaders(token),
-  })
-  if (!res.ok) throw new Error('Не удалось закрыть карту')
-}
+
 
 export async function deleteCardAdmin(token, cardId) {
   const res = await fetch(`${API}/admin/cards/${cardId}`, {
     method: 'DELETE',
     headers: authHeaders(token),
   })
-  if (!res.ok) throw new Error('Не удалось удалить карту')
+  
+  if (!res.ok) {
+    throw new Error('Не удалось удалить карту')
+  }
+
+  // Возвращаем подтверждение успеха
+  return true 
 }

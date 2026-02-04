@@ -20,9 +20,7 @@ public class AdminCardService {
         Card card = cardRepository.findByIdAndDeletedFalse(cardId)
                 .orElseThrow(() -> new IllegalStateException("Card not found"));
 
-        if (card.getStatus() == CardStatus.CLOSED) {
-            throw new IllegalStateException("Closed card cannot be blocked");
-        }
+
 
         card.setStatus(CardStatus.BLOCKED);
         card.setBlockedAt(Instant.now());
@@ -33,33 +31,38 @@ public class AdminCardService {
         Card card = cardRepository.findByIdAndDeletedFalse(cardId)
                 .orElseThrow(() -> new IllegalStateException("Card not found"));
 
-        if (card.getStatus() == CardStatus.CLOSED) {
-            throw new IllegalStateException("Closed card cannot be unblocked");
-        }
 
         card.setStatus(CardStatus.ACTIVE);
         card.setBlockedAt(null); // опционально
     }
 
+//    @Transactional
+//    public void close(Long cardId) {
+//        Card card = cardRepository.findByIdAndDeletedFalse(cardId)
+//                .orElseThrow(() -> new IllegalStateException("Card not found"));
+//
+//        card.setStatus(CardStatus.CLOSED);
+//        card.setClosedAt(Instant.now());
+//    }
+
+//    @Transactional
+//    public void softDelete(Long cardId) {
+//        Card card = cardRepository.findByIdAndDeletedFalse(cardId)
+//                .orElseThrow(() -> new IllegalStateException("Card not found"));
+//
+//        // обычно удалять можно только закрытую
+//        if (card.getStatus() != CardStatus.CLOSED) {
+//            throw new IllegalStateException("Card must be CLOSED before delete");
+//        }
+//
+//        card.setDeleted(true);
+//    }
+
     @Transactional
-    public void close(Long cardId) {
-        Card card = cardRepository.findByIdAndDeletedFalse(cardId)
-                .orElseThrow(() -> new IllegalStateException("Card not found"));
+    public void deleteCard(Long id) {
 
-        card.setStatus(CardStatus.CLOSED);
-        card.setClosedAt(Instant.now());
-    }
+       cardRepository.deleteById(id);
 
-    @Transactional
-    public void softDelete(Long cardId) {
-        Card card = cardRepository.findByIdAndDeletedFalse(cardId)
-                .orElseThrow(() -> new IllegalStateException("Card not found"));
 
-        // обычно удалять можно только закрытую
-        if (card.getStatus() != CardStatus.CLOSED) {
-            throw new IllegalStateException("Card must be CLOSED before delete");
-        }
-
-        card.setDeleted(true);
     }
 }

@@ -160,7 +160,8 @@ export default function CardList({ token }) {
         <p className="cards-empty">Карт пока нет. Нажмите «Создать карту».</p>
       ) : (
         <ul className="cards-list">
-          {cards.map((c) => (
+          {cards
+          .map((c) => (
             <li
               key={c.id}
               className="bank-card bank-card--clickable"

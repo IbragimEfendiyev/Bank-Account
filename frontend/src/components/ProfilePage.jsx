@@ -1,7 +1,9 @@
 import CardList from './CardList'
 import AdminCardsPanel from './AdminCardsPanel'
+import { useState } from 'react'
 
 export default function ProfilePage({ user, token, onLogout }) {
+
   const isAdmin = user?.authorities?.some((a) => a.authority === 'ROLE_ADMIN')
   const displayName =
     String(user?.principal ?? '')
@@ -28,7 +30,7 @@ export default function ProfilePage({ user, token, onLogout }) {
 
         <CardList token={token} />
 
-        {isAdmin && <AdminCardsPanel token={token} />}
+        {isAdmin && <AdminCardsPanel  token={token} />}
       </div>
     </div>
   )

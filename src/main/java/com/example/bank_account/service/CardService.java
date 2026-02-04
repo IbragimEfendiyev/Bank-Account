@@ -32,12 +32,8 @@ public class CardService {
         if (card.getStatus() == CardStatus.BLOCKED) {
             throw new IllegalStateException(prefix + ": карта заблокирована");
         }
-        if (card.getStatus() == CardStatus.CLOSED) {
-            throw new IllegalStateException(prefix + ": карта закрыта");
-        }
+
     }
-
-
 
     private void ensureCardExistsBasics(Card card) {
         if (card.getBalance() == null) card.setBalance(BigDecimal.ZERO);
@@ -94,8 +90,6 @@ public class CardService {
         // 2) Ищем карту, но сразу проверяем что она принадлежит ownerId
 //        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
 //                .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
-
-
 
 
         // 3) Берём старый баланс
@@ -169,6 +163,8 @@ public class CardService {
         // 4) сохраняем
         cardRepository.save(from);
         cardRepository.save(to);
+
+
     }
 
     @Transactional

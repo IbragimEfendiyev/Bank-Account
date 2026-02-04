@@ -3,7 +3,6 @@ import {
   getAllCardsAdmin,
   blockCardAdmin,
   unblockCardAdmin,
-  closeCardAdmin,
   deleteCardAdmin,
 } from '../api'
 
@@ -11,7 +10,6 @@ import {
 // status: ACTIVE | BLOCKED | CLOSED
 function statusLabel(status) {
   if (status === 'BLOCKED') return 'Заблокирована'
-  if (status === 'CLOSED') return 'Закрыта'
   return 'Активна'
 }
 
@@ -47,6 +45,8 @@ export default function AdminCardsPanel({ token }) {
       setActionCardId(null)
     }
   }
+
+
 
   if (!token) return null
 
@@ -119,18 +119,8 @@ export default function AdminCardsPanel({ token }) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-outline admin-cards__btn"
-                  disabled={actionCardId === c.id || c.status === 'CLOSED'}
-                  onClick={() =>
-                    runAction(c.id, () => closeCardAdmin(token, c.id))
-                  }
-                >
-                  Закрыть
-                </button>
-                <button
-                  type="button"
                   className="btn btn-outline admin-cards__btn admin-cards__btn--danger"
-                  disabled={actionCardId === c.id || c.status !== 'CLOSED'}
+                  disabled={actionCardId === c.id}
                   onClick={() =>
                     runAction(c.id, () => deleteCardAdmin(token, c.id))
                   }

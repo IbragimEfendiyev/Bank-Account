@@ -38,15 +38,15 @@ public class AdminCardController {
         return ResponseEntity.ok("unblocked");
     }
 
-    @PatchMapping("/{id}/close")
-    public ResponseEntity<?> close(@PathVariable Long id) {
-        adminCardService.close(id);
-        return ResponseEntity.ok("closed");
-    }
+//    @PatchMapping("/{id}/close")
+//    public ResponseEntity<?> close(@PathVariable Long id) {
+//        adminCardService.close(id);
+//        return ResponseEntity.ok("closed");
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        adminCardService.softDelete(id);
+        adminCardService.deleteCard(id);
         return ResponseEntity.ok("deleted");
     }
 }
