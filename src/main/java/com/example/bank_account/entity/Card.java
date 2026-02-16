@@ -39,6 +39,7 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User owner;
 
+    // эта аннотация указывает что данные из кардстатуса будут в виде строки иначе хайбернейт берет как 0 1 2
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CardStatus status = CardStatus.ACTIVE;

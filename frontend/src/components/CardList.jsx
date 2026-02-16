@@ -8,6 +8,7 @@ import { getMyCards, orderCard, topUp, transfer, revealCard } from '../api'
 import TopUpModal from '../modal/TopUpModal'
 import TransferModal from '../modal/TransferModal'
 import CardDetailsModal from '../modal/CardDetailsModal'
+import './CardList.css'
 
 function formatCardNumber(cardNumber) {
   if (!cardNumber || cardNumber.length < 4) return '•• •• ••••'
@@ -144,98 +145,114 @@ const loadCards = () => {
   }
 
   return (
-    <section className="cards-section">
-      <div className="cards-header">
-        <h2>Мои карты</h2>
-        <button
-          type="button"
-          className="btn btn-order"
-          onClick={handleOrderCard}
-          disabled={ordering}
-        >
-          {ordering ? 'Создаём…' : 'Создать карту'}
-        </button>
-      </div>
-      {error && <p className="error">{error}</p>}
-      {cards.length === 0 ? (
-        <p className="cards-empty">Карт пока нет. Нажмите «Создать карту».</p>
-      ) : (
-        <ul className="cards-list">
-          {cards
-          .map((c) => (
+  <section className="cards-section">
+    <div className="cards-header">
+      <h2>Мои карты</h2>
+      <button
+        type="button"
+        className="btn btn-order"
+        onClick={handleOrderCard}
+        disabled={ordering}
+      >
+        {ordering ? 'Создаём…' : 'Создать карту'}
+      </button>
+    </div>
+
+    {error && <p className="error">{error}</p>}
+
+    {cards.length === 0 ? (
+      <p className="cards-empty">Карт пока нет. Нажмите «Создать карту».</p>
+    ) : (
+      <ul className="cards-list">
+        {cards.map((c) => {
+          const isBlocked = c.status === 'BLOCKED'
+
+          return (
             <li
               key={c.id}
-              className="bank-card bank-card--clickable"
-              onClick={() => openCardDetailsModal(c)}
+              className={`bank-card bank-card--clickable ${isBlocked ? 'bank-card--blocked' : ''}`}
+              onClick={isBlocked ? undefined : () => openCardDetailsModal(c)}
               role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && openCardDetailsModal(c)}
-              aria-label={`Карта •••• ${c.cardNumber?.slice(-4) || ''}. Нажмите, чтобы показать полные данные`}
+              tabIndex={isBlocked ? -1 : 0}
+              onKeyDown={(e) => !isBlocked && e.key === 'Enter' && openCardDetailsModal(c)}
+              aria-label={`Карта •••• ${c.cardNumber?.slice(-4) || ''}`}
             >
               <div className="bank-card__top">
                 <div className="bank-card__brand-row">
                   <span className="bank-card__brand">Mastercard</span>
-                  <span className="bank-card__mini-icon" aria-hidden>💳</span>
+                  <span className="bank-card__mini-icon" aria-hidden>
+                    💳
+                  </span>
                 </div>
                 <p className="bank-card__balance">{formatBalance(c.balance)} ₽</p>
               </div>
+
               <div className="bank-card__badges">
                 <span className="bank-card__badge bank-card__badge--logo">Mastercard</span>
-                <span className="bank-card__badge bank-card__badge--number">{formatCardNumber(c.cardNumber)}</span>
-                <span className="bank-card__badge bank-card__badge--expiry">{formatDate(c.expireDate)}</span>
+                <span className="bank-card__badge bank-card__badge--number">
+                  {formatCardNumber(c.cardNumber)}
+                </span>
+                <span className="bank-card__badge bank-card__badge--expiry">
+                  {formatDate(c.expireDate)}
+                </span>
                 <span className="bank-card__badge bank-card__badge--pay">Apple Pay</span>
               </div>
+
               <div className="bank-card__actions" onClick={(e) => e.stopPropagation()}>
                 <button
                   type="button"
                   className="bank-card__btn"
                   onClick={() => openTopUpModal(c)}
+                  disabled={isBlocked}
                 >
                   <span className="bank-card__btn-icon">💳</span>
                   Пополнить
                 </button>
+
                 <button type="button" className="bank-card__btn" disabled>
                   <span className="bank-card__btn-icon">💳</span>
                   Оплатить
                 </button>
+
                 <button
                   type="button"
                   className="bank-card__btn"
                   onClick={() => openTransferModal(c)}
+                  disabled={isBlocked}
                 >
                   <span className="bank-card__btn-icon">⇄</span>
                   Перевод
                 </button>
               </div>
+
+              {isBlocked && <div className="bank-card__status">Карта заблокирована</div>}
             </li>
-          ))}
-        </ul>
-      )}
+          )
+        })}
+      </ul>
+    )}
 
-      {/* Модалка пополнения: открывается при cardForTopUp !== null */}
-      <TopUpModal
-        open={!!cardForTopUp}
-        onClose={closeTopUpModal}
-        onTopUp={handleTopUp}
-        loading={topUpLoading}
-      />
+    <TopUpModal
+      open={!!cardForTopUp}
+      onClose={closeTopUpModal}
+      onTopUp={handleTopUp}
+      loading={topUpLoading}
+    />
 
-      {/* Модалка перевода: два шага — номер карты, затем сумма; открывается при клике «Перевод» */}
-      <TransferModal
-        open={!!cardForTransfer}
-        onClose={closeTransferModal}
-        sourceCard={cardForTransfer}
-        onTransfer={handleTransfer}
-        loading={transferLoading}
-      />
+    <TransferModal
+      open={!!cardForTransfer}
+      onClose={closeTransferModal}
+      sourceCard={cardForTransfer}
+      onTransfer={handleTransfer}
+      loading={transferLoading}
+    />
 
-      <CardDetailsModal
-        open={!!cardForDetails}
-        onClose={closeCardDetailsModal}
-        card={cardForDetails}
-        onReveal={handleReveal}
-        loading={detailsLoading}
-      />
-    </section>
-  )
-}
+    <CardDetailsModal
+      open={!!cardForDetails}
+      onClose={closeCardDetailsModal}
+      card={cardForDetails}
+      onReveal={handleReveal}
+      loading={detailsLoading}
+    />
+  </section>
+) }

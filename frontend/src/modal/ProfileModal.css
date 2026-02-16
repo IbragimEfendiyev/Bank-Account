@@ -1,0 +1,37 @@
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent; /* ❗ НЕТ затемнения */
+  z-index: 1000;
+}
+
+.profile-modal {
+  position: fixed;
+  top: 70px;
+  right: 30px;
+  width: 260px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+}
+
+.profile-modal__title {
+  margin-bottom: 12px;
+}
+
+.profile-modal__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.profile-modal__logout {
+  width: 100%;
+  margin-top: 16px;
+}
