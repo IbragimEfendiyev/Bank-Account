@@ -44,7 +44,7 @@ public class CardController {
         return cardService.topUp(user.getId(), cardId, request.amount());
     }
 
-    @PostMapping("/api/transfers")
+    @PostMapping("/transfers")
     public void transfer(@RequestBody TransferRequest request) {
         User user = currentUserService.requireUser();
         cardService.transfer(user.getId(), request);

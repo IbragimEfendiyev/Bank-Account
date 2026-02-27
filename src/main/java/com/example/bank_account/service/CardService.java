@@ -121,30 +121,6 @@ public class CardService {
 
         ensureCanDoMoneyOperation(to, "Перевод (получатель)");
 
-
-
-
-        if (req.amount() == null || req.amount().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Сумма должна быть больше 0");
-        }
-
-
-        if (req.fromCardId() == null) {
-            throw new IllegalArgumentException("fromCardId обязателен");
-        }
-        if (req.toCardNumber() == null || req.toCardNumber().isBlank()) {
-            throw new IllegalArgumentException("toCardNumber обязателен");
-        }
-
-//        // 1) источник — только твоя карта
-//        Card from = cardRepository.findByIdAndOwnerId(req.fromCardId(), ownerId)
-//                .orElseThrow(() -> new IllegalStateException("Карта списания не найдена или не ваша"));
-//
-//        // 2) получатель — любая карта
-//        Card to = cardRepository.findByCardNumber(req.toCardNumber())
-//                .orElseThrow(() -> new IllegalStateException("Карта получателя не найдена"));
-
-        // (опционально) запрет перевода на ту же карту
         if (from.getId().equals(to.getId())) {
             throw new IllegalArgumentException("Нельзя перевести на ту же карту");
         }
@@ -154,19 +130,14 @@ public class CardService {
             throw new IllegalStateException("Недостаточно средств");
         }
 
-        // 3) меняем балансы
         from.setBalance(fromBalance.subtract(req.amount()));
 
         BigDecimal toBalance = to.getBalance() == null ? BigDecimal.ZERO : to.getBalance();
         to.setBalance(toBalance.add(req.amount()));
 
-        // 4) сохраняем
         cardRepository.save(from);
         cardRepository.save(to);
-
-
     }
-
     @Transactional
     public RevealCardResponse revealCard(Long ownerId, Long cardId, String rawPassword) {
 

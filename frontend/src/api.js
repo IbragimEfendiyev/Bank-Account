@@ -1,4 +1,4 @@
-const API = ''
+const API = "http://localhost:8081";
 
 
 export async function login(username, password) {
@@ -77,7 +77,7 @@ export async function topUp(token, cardId, amount) {
  * При ошибке (карта не найдена, недостаточно средств и т.д.) бэкенд возвращает текст ошибки.
  */
 export async function transfer(token, fromCardId, toCardNumber, amount) {
-  const res = await fetch(`${API}/api/cards/api/transfers`, {
+  const res = await fetch(`${API}/api/cards/transfers`, {
     method: 'POST',
     headers: {
       ...authHeaders(token),
