@@ -114,6 +114,27 @@ export async function revealCard(token, cardId, password) {
   return data
 }
 
+
+export async function payFromCard(token, cardId, amount) {
+  const res = await fetch(`${API}/api/cards/${cardId}/pay`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      amount: Number(amount),
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(text || 'Ошибка оплаты')
+  }
+
+  return res.json()
+}
+
 // ===== Админ: управление всеми картами =====
 // Бэк: GET /admin/cards → CardAdminDto[] (id, ownerUsername, maskedNumber, status, balance)
 // PATCH /admin/cards/{id}/block, PATCH .../unblock, DELETE /admin/cards/{id}

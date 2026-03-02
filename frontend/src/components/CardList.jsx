@@ -4,8 +4,9 @@
  * Вызывается API topUp(cardId, amount), список карт обновляется, модалка закрывается.
  */
 import { useState, useEffect } from 'react'
-import { getMyCards, orderCard, topUp, transfer, revealCard } from '../api'
+import { getMyCards, orderCard, topUp, transfer, revealCard,payFromCard } from '../api'
 import TopUpModal from '../modal/TopUpModal'
+import PayModal from '../modal/PayModal'
 import TransferModal from '../modal/TransferModal'
 import CardDetailsModal from '../modal/CardDetailsModal'
 import './CardList.css'
@@ -44,6 +45,10 @@ export default function CardList({token , cards, setCards }) {
   // Модалка просмотра полных данных карты (открывается по клику на карту)
   const [cardForDetails, setCardForDetails] = useState(null)
   const [detailsLoading, setDetailsLoading] = useState(false)
+
+
+  const [cardForPay, setCardForPay] = useState(null)
+  const [payLoading, setPayLoading] = useState(false)
 
 const loadCards = () => {
   if (!token) return
@@ -124,6 +129,31 @@ const loadCards = () => {
       setDetailsLoading(false)
     }
   }
+
+
+const openPayModal = (c) => {
+  setError('')
+  setCardForPay(c)
+}
+
+const closePayModal = () => {
+  setCardForPay(null)
+}
+
+const handlePay = async (amount) => {
+  if (!cardForPay) return
+  setPayLoading(true)
+
+  try {
+    await payFromCard(token, cardForPay.id, amount)
+    loadCards()
+    closePayModal()
+  } catch (err) {
+    setError(err.message || 'Не удалось выполнить оплату')
+  } finally {
+    setPayLoading(false)
+  }
+}
 
   // Перевод: запрос на бэк; при успехе обновляем список и закрываем модалку.
   // Ошибка (например «Карта получателя не найдена») обрабатывается в TransferModal.
@@ -209,7 +239,12 @@ const loadCards = () => {
                   Пополнить
                 </button>
 
-                <button type="button" className="bank-card__btn" disabled>
+                <button
+                  type="button"
+                  className="bank-card__btn"
+                  onClick={() => openPayModal(c)}
+                  disabled={isBlocked}
+                >
                   <span className="bank-card__btn-icon">💳</span>
                   Оплатить
                 </button>
@@ -237,6 +272,13 @@ const loadCards = () => {
       onClose={closeTopUpModal}
       onTopUp={handleTopUp}
       loading={topUpLoading}
+    />
+
+    <PayModal
+      open={!!cardForPay}
+      onClose={closePayModal}
+      onPay={handlePay}
+      loading={payLoading}
     />
 
     <TransferModal

@@ -13,5 +13,8 @@ public class CardResponse {
     private String cardNumber;
     private LocalDate expireDate;
     private BigDecimal balance;
+
+    public CardResponse(Long id, BigDecimal balance) {
+    }
 }
 

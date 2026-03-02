@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,6 +50,25 @@ public class CardController {
         User user = currentUserService.requireUser();
         cardService.transfer(user.getId(), request);
     }
+
+    @PostMapping("/{cardId}/pay")
+    public ResponseEntity<CardResponse> pay(
+            @PathVariable Long cardId,
+            @RequestBody PayRequest request
+    ) {
+        User user = currentUserService.requireUser();
+
+        CardResponse card = cardService.pay(
+                cardId,
+                request.getAmount(),
+                user.getId()
+        );
+
+        return ResponseEntity.ok(card);
+    }
+
+
+
 
     @PostMapping("/{cardId}/reveal")
     public ResponseEntity<RevealCardResponse> reveal(

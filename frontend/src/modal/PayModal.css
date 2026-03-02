@@ -1,0 +1,80 @@
+.pay-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.pay-modal {
+  background: white;
+  padding: 24px;
+  border-radius: 18px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pay-modal-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.pay-modal-input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.pay-modal-error {
+  color: red;
+  font-size: 14px;
+}
+
+.pay-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pay-modal-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.pay-modal-btn-cancel {
+  background: #eee;
+}
+
+.pay-modal-btn-confirm {
+  background: #111;
+  color: white;
+}
+
+.pay-modal-types {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.pay-type-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+}
+
+.pay-type-btn.active {
+  background: #4a6cf7;
+  color: white;
+}

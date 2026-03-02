@@ -11,11 +11,14 @@ import com.example.bank_account.repository.CardRepository;
 import com.example.bank_account.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -86,12 +89,6 @@ public class CardService {
             throw new IllegalArgumentException("Сумма должна быть больше 0");
         }
 
-
-        // 2) Ищем карту, но сразу проверяем что она принадлежит ownerId
-//        Card card = cardRepository.findByIdAndOwnerId(cardId, ownerId)
-//                .orElseThrow(() -> new IllegalStateException("Карта не найдена или не ваша"));
-
-
         // 3) Берём старый баланс
         BigDecimal oldBalance = card.getBalance();
         if (oldBalance == null) oldBalance = BigDecimal.ZERO;
@@ -138,6 +135,30 @@ public class CardService {
         cardRepository.save(from);
         cardRepository.save(to);
     }
+
+    @Transactional
+    public CardResponse pay(Long cardId, BigDecimal amount, Long ownerId) {
+
+        Card card = cardRepository
+                .findByIdAndOwnerIdAndDeletedFalse(cardId, ownerId)
+                .orElseThrow(() -> new IllegalStateException("Карта не найдена"));
+
+        ensureCanDoMoneyOperation(card, "Оплата");
+
+        BigDecimal balance = Optional.ofNullable(card.getBalance())
+                .orElse(BigDecimal.ZERO);
+
+        if (balance.compareTo(amount) < 0)
+            throw new IllegalStateException("Недостаточно средств");
+
+        card.setBalance(balance.subtract(amount));
+
+        return new CardResponse(
+                card.getId(),
+                card.getBalance()
+        );
+    }
+
     @Transactional
     public RevealCardResponse revealCard(Long ownerId, Long cardId, String rawPassword) {
 
@@ -166,7 +187,6 @@ public class CardService {
                 card.getCvv()
         );
     }
-
 
 
 
