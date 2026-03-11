@@ -24,6 +24,18 @@ export async function register(username, password) {
   }
 }
 
+export async function getCardHistory(token, cardId) {
+  const res = await fetch(`${API}/api/cards/${cardId}/history`, {
+    headers: authHeaders(token),
+  })
+
+  if (!res.ok) {
+    throw new Error('Не удалось загрузить историю')
+  }
+
+  return res.json()
+}
+
 export async function getMe(token) {
   const res = await fetch(`${API}/me`, {
     headers: { Authorization: `Bearer ${token}` },

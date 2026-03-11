@@ -1,169 +1,212 @@
+.modal-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  border: none;
+  cursor: pointer;
+}
+
+/* ── Modal card ── */
+.card-details-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 20px;
+  background: #1c1f2e;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  padding: 28px;
+  font-family: 'Sora', sans-serif;
+  color: #f1f1f1;
+  animation: modalIn 0.2s ease-out both;
+  z-index: 1;
+}
+
+@keyframes modalIn {
+  from { transform: translateY(12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Header ── */
 .card-details-modal .modal-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 20px;
 }
 
 .card-details-modal .modal-title {
-  font-size: 18px;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
+  letter-spacing: -0.02em;
 }
 
 .card-details-modal .modal-subtitle {
-  margin-top: 4px;
-  font-size: 13px;
-  color: #475569;
+  margin-top: 5px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.5;
 }
 
 .card-details-modal .modal-close {
-  border: 0;
-  background: transparent;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   cursor: pointer;
-  color: #64748b;
-  font-size: 16px;
+  color: #9ca3af;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
 }
 
 .card-details-modal .modal-close:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: rgba(255,255,255,0.12);
+  color: #f1f1f1;
 }
 
-.card-details-modal .modal-card {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
-  padding: 20px;
-  animation: modalIn 160ms ease-out;
-}
-
-@keyframes modalIn {
-  from {
-    transform: translateY(10px);
-    opacity: 0.6;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
+/* ── Error ── */
 .card-details-modal-error {
-  margin-top: 12px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-radius: 10px;
-  background: #fef2f2;
-  color: #b91c1c;
-  font-size: 14px;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.2);
+  color: #f87171;
+  font-size: 0.85rem;
   font-weight: 500;
+  margin-bottom: 16px;
 }
 
+/* ── Form ── */
 .card-details-modal .modal-form {
-  margin-top: 16px;
   display: grid;
   gap: 12px;
 }
 
 .card-details-modal .modal-label {
-  font-size: 13px;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #0f172a;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .card-details-modal .modal-inputWrap {
   display: flex;
   align-items: center;
-  gap: 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 10px 12px;
-  background: #ffffff;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .card-details-modal .modal-inputWrap:focus-within {
-  border-color: rgba(37, 99, 235, 0.55);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
 }
 
 .card-details-modal .modal-input {
   width: 100%;
-  border: 0;
+  border: none;
   outline: none;
-  font-size: 15px;
-  color: #0f172a;
+  font-size: 0.95rem;
+  font-family: 'Sora', sans-serif;
+  color: #f1f1f1;
+  background: transparent;
 }
 
+.card-details-modal .modal-input::placeholder {
+  color: #4b5563;
+}
+
+/* ── Button ── */
 .card-details-modal .modal-btn {
-  margin-top: 4px;
-  border: 0;
-  border-radius: 14px;
-  padding: 12px 14px;
-  font-size: 14px;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.9rem;
   font-weight: 700;
+  font-family: 'Sora', sans-serif;
   cursor: pointer;
-  color: white;
-  background: #2563eb;
-  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+  transition: opacity 0.2s, transform 0.15s;
 }
 
 .card-details-modal .modal-btn:hover:not(:disabled) {
-  filter: brightness(1.04);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .card-details-modal .modal-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
-  background: #93c5fd;
+  transform: none;
   box-shadow: none;
 }
 
+/* ── Revealed data ── */
 .card-details-revealed {
-  margin-top: 16px;
   display: grid;
-  gap: 16px;
+  gap: 10px;
 }
 
 .card-details-row {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px;
+  gap: 5px;
+  padding: 14px 16px;
   border-radius: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
 .card-details-label {
-  font-size: 12px;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: #64748b;
+  color: #6b7280;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .card-details-value {
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
-  color: #0f172a;
+  color: #f1f1f1;
   font-variant-numeric: tabular-nums;
 }
 
 .card-details-number {
-  font-size: 18px;
-  letter-spacing: 0.08em;
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  font-family: ui-monospace, monospace;
 }
 
 .card-details-cvv {
-  font-size: 20px;
-  letter-spacing: 0.12em;
+  font-size: 1.3rem;
+  letter-spacing: 0.15em;
+  font-family: ui-monospace, monospace;
+  color: #a5b4fc;
 }
 
 .card-details-close-btn {
-  margin-top: 8px;
+  margin-top: 6px;
 }

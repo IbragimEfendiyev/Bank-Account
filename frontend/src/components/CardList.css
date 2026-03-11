@@ -1,10 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap');
+
 .cards-loading,
 .cards-empty {
   margin: 0;
   font-size: 0.95rem;
-  color: #666;
+  color: #6b7280;
+  font-family: 'Sora', sans-serif;
 }
 
+/* ── Section header ── */
+.cards-section {
+  margin-top: 0;
+}
+
+.cards-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.cards-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.btn-order {
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.btn-order:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-order:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Cards list ── */
 .cards-list {
   list-style: none;
   margin: 0;
@@ -12,167 +61,177 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 1.25rem;
+  gap: 20px;
+}
+
+/* ── Bank card ── */
+.bank-card {
+  flex: 1 1 300px;
+  min-width: 280px;
+  max-width: 380px;
+  background: linear-gradient(145deg, #1c1f2e 0%, #161822 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  font-family: 'Sora', sans-serif;
+  color: #f1f1f1;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Декоративный блик */
+.bank-card::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.bank-card--clickable {
+  cursor: pointer;
+}
+
+.bank-card--clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+}
+
+.bank-card--clickable:focus {
+  outline: 2px solid #6366f1;
+  outline-offset: 3px;
 }
 
 .bank-card--blocked {
-  opacity: 0.45;
+  opacity: 0.4;
   filter: grayscale(100%);
   cursor: not-allowed;
 }
 
 .bank-card--blocked:hover {
   transform: none;
-  box-shadow: none;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
-.bank-card--blocked .bank-card__btn {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.bank-card__status {
-  margin-top: 12px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #666;
-}
-
-
-/* Карта в стиле банковской (референс) */
-.bank-card {
-  flex: 1 1 280px;
-  min-width: 260px;
-  max-width: 380px;
-  background: linear-gradient(145deg, #e8e8e8 0%, #d8d8d8 100%);
-  border-radius: 16px;
-  padding: 1.25rem 1.25rem 1rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
-  font-size: 0.95rem;
-  color: #1a1a1a;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.bank-card--clickable {
-  cursor: pointer;
-  transition: box-shadow 0.2s ease;
-}
-
-.bank-card--clickable:hover {
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.bank-card--clickable:focus {
-  outline: 2px solid #1a73e8;
-  outline-offset: 2px;
-}
-
+/* ── Card top ── */
 .bank-card__top {
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 
 .bank-card__brand-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.35rem;
+  margin-bottom: 12px;
 }
 
 .bank-card__brand {
+  font-size: 0.8rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  color: #1a1a1a;
-  letter-spacing: 0.02em;
+  color: #9ca3af;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .bank-card__mini-icon {
-  width: 28px;
-  height: 20px;
+  width: 30px;
+  height: 22px;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(255,255,255,0.07);
   border-radius: 6px;
 }
 
 .bank-card__balance {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #1a1a1a;
+  letter-spacing: -0.03em;
+  color: #ffffff;
 }
 
+/* ── Badges ── */
 .bank-card__badges {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
+  gap: 6px;
+  margin-bottom: 20px;
   min-width: 0;
 }
 
 .bank-card__badge {
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.07);
   border-radius: 999px;
   font-size: 0.68rem;
   font-weight: 500;
-  color: #333;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: #9ca3af;
+  border: 1px solid rgba(255,255,255,0.08);
   white-space: nowrap;
 }
 
 .bank-card__badge--number {
   font-family: ui-monospace, monospace;
-  letter-spacing: 0.04em;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: 0.06em;
 }
 
+/* ── Actions ── */
 .bank-card__actions {
   display: flex;
-  gap: 0.35rem;
-  margin-top: 0.5rem;
-  min-width: 0;
+  gap: 8px;
 }
 
 .bank-card__btn {
   flex: 1;
-  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  padding: 0.5rem 0.35rem;
-  border: none;
-  border-radius: 10px;
-  background: #1a73e8;
-  color: #fff;
-  font-size: 0.75rem;
+  gap: 5px;
+  padding: 9px 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  font-size: 0.72rem;
   font-weight: 600;
+  font-family: 'Sora', sans-serif;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .bank-card__btn:hover:not(:disabled) {
-  background: #1557b0;
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #a5b4fc;
 }
 
 .bank-card__btn:disabled {
-  cursor: default;
-  opacity: 0.9;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .bank-card__btn-icon {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   line-height: 1;
-  flex-shrink: 0;
+}
+
+/* ── Blocked status ── */
+.bank-card__status {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }

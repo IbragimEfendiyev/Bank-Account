@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
+import './AuthPage.css'
 
 export default function AuthPage({ onLogin }) {
   const [mode, setMode] = useState('login')
@@ -19,10 +20,17 @@ export default function AuthPage({ onLogin }) {
   }
 
   return (
-    <div className="app">
-      <div className="card auth">
-        <h1>Вход</h1>
-        <div className="tabs">
+    <div className="auth-page">
+
+      <div className="auth-page__glow" />
+
+      <div className="auth-card">
+        <div className="auth-card__logo">⬡</div>
+        <h1 className="auth-card__title">
+          {mode === 'login' ? 'Добро пожаловать' : 'Создать аккаунт'}
+        </h1>
+
+        <div className="auth-card__tabs">
           <button
             type="button"
             className={mode === 'login' ? 'active' : ''}
@@ -39,15 +47,11 @@ export default function AuthPage({ onLogin }) {
           </button>
         </div>
 
-        {error && <p className="error">{error}</p>}
+        {error && <p className="auth-card__error">{error}</p>}
 
         {mode === 'login' && (
-          <LoginForm
-            onSuccess={handleLoginSuccess}
-            onError={setError}
-          />
+          <LoginForm onSuccess={handleLoginSuccess} onError={setError} />
         )}
-
         {mode === 'register' && (
           <RegisterForm
             onSuccess={handleRegisterSuccess}

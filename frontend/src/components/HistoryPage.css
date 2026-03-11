@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap');
+
+.history-container {
+  padding: 40px 48px;
+  width: 100%;
+  max-width: 800px;
+  font-family: 'Sora', sans-serif;
+}
+
+.history-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 28px;
+  letter-spacing: -0.03em;
+}
+
+/* ── Card selector ── */
+.history-card-select {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.card-btn {
+  padding: 9px 18px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  color: #9ca3af;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.card-btn:hover {
+  border-color: rgba(99,102,241,0.5);
+  color: #a5b4fc;
+  background: rgba(99,102,241,0.1);
+}
+
+.card-btn.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(99,102,241,0.4);
+}
+
+.card-btn__dots {
+  opacity: 0.4;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  font-family: ui-monospace, monospace;
+}
+
+/* ── History list ── */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-hint {
+  color: #4b5563;
+  font-size: 0.9rem;
+  padding: 24px 0;
+}
+
+/* ── Transaction item ── */
+.tx-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: #1c1f2e;
+  border: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.15s ease, transform 0.15s ease;
+  animation: fadeSlideIn 0.3s ease both;
+}
+
+.tx-item:hover {
+  background: #22263a;
+  transform: translateX(4px);
+  border-color: rgba(99,102,241,0.2);
+}
+
+.tx-item__left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tx-type {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.tx-date {
+  font-size: 0.75rem;
+  color: #4b5563;
+  letter-spacing: 0.02em;
+}
+
+.tx-item__right {
+  flex-shrink: 0;
+}
+
+.tx-amount {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.tx-amount--plus {
+  color: #34d399;
+}
+
+.tx-amount--minus {
+  color: #f87171;
+}
+
+/* ── Animation ── */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

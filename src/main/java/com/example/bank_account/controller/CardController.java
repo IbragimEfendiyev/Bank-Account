@@ -2,6 +2,7 @@ package com.example.bank_account.controller;
 
 import com.example.bank_account.dto.*;
 import com.example.bank_account.entity.Card;
+import com.example.bank_account.entity.TransactionHistory;
 import com.example.bank_account.entity.User;
 import com.example.bank_account.repository.UserRepository;
 import com.example.bank_account.security.CurrentUserService;
@@ -67,6 +68,18 @@ public class CardController {
         return ResponseEntity.ok(card);
     }
 
+
+    @GetMapping("/{cardId}/history")
+    public ResponseEntity<List<TransactionHistory>> getHistory(
+            @PathVariable Long cardId) {
+
+        User user = currentUserService.requireUser();
+
+        List<TransactionHistory> history =
+                cardService.getCardHistory(cardId, user.getId());
+
+        return ResponseEntity.ok(history);
+    }
 
 
 

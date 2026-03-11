@@ -4,10 +4,9 @@ import com.example.bank_account.card.CardGenerator;
 import com.example.bank_account.dto.CardResponse;
 import com.example.bank_account.dto.RevealCardResponse;
 import com.example.bank_account.dto.TransferRequest;
-import com.example.bank_account.entity.Card;
-import com.example.bank_account.entity.CardStatus;
-import com.example.bank_account.entity.User;
+import com.example.bank_account.entity.*;
 import com.example.bank_account.repository.CardRepository;
+import com.example.bank_account.repository.TransactionHistoryRepository;
 import com.example.bank_account.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +27,7 @@ public class CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TransactionHistoryRepository transactionHistoryRepository;
 
     private void ensureCanDoMoneyOperation(Card card, String prefix) {
         if (card.isDeleted()) {
@@ -100,6 +101,16 @@ public class CardService {
         // 5) Сохраняем
         Card saved = cardRepository.save(card);
 
+        TransactionHistory history = new TransactionHistory();
+        history.setCardId(card.getId());
+        history.setUserId(ownerId);
+        history.setAmount(amount);
+        history.setType(TransactionType.TOP_UP);
+        history.setDirection(TransactionDirection.IN);
+        history.setCreatedAt(java.time.LocalDateTime.now());
+
+        transactionHistoryRepository.save(history);
+
         // 6) Возвращаем DTO
         return toDto(saved);
 
@@ -134,6 +145,30 @@ public class CardService {
 
         cardRepository.save(from);
         cardRepository.save(to);
+
+        // История для отправителя
+        TransactionHistory historyFrom = new TransactionHistory();
+        historyFrom.setCardId(from.getId());
+        historyFrom.setUserId(ownerId);
+        historyFrom.setAmount(req.amount());
+        historyFrom.setType(TransactionType.TRANSFER);
+        historyFrom.setDirection(TransactionDirection.OUT);  // ← исходящий
+        historyFrom.setRelatedCardId(to.getId());
+        historyFrom.setCreatedAt(java.time.LocalDateTime.now());
+
+        transactionHistoryRepository.save(historyFrom);
+
+        // История для получателя
+        TransactionHistory historyTo = new TransactionHistory();
+        historyTo.setCardId(to.getId());
+        historyTo.setUserId(to.getOwner().getId());
+        historyTo.setAmount(req.amount());
+        historyTo.setType(TransactionType.TRANSFER);
+        historyTo.setDirection(TransactionDirection.IN);  // ← входящий
+        historyTo.setRelatedCardId(from.getId());
+        historyTo.setCreatedAt(java.time.LocalDateTime.now());
+
+        transactionHistoryRepository.save(historyTo);
     }
 
     @Transactional
@@ -152,6 +187,17 @@ public class CardService {
             throw new IllegalStateException("Недостаточно средств");
 
         card.setBalance(balance.subtract(amount));
+
+        // === СОЗДАЁМ ИСТОРИЮ ===
+        TransactionHistory history = new TransactionHistory();
+        history.setCardId(card.getId());
+        history.setUserId(ownerId);
+        history.setAmount(amount);
+        history.setType(TransactionType.PAYMENT);
+        history.setDirection(TransactionDirection.OUT);
+        history.setCreatedAt(LocalDateTime.now());
+
+        transactionHistoryRepository.save(history);
 
         return new CardResponse(
                 card.getId(),
@@ -200,5 +246,16 @@ public class CardService {
                 card.getExpireDate(),
                 card.getBalance()
         );
+    }
+
+    public List<TransactionHistory> getCardHistory(
+            Long cardId,
+            Long userId) {
+
+        return transactionHistoryRepository
+                .findByCardIdAndUserIdOrderByCreatedAtDesc(
+                        cardId,
+                        userId
+                );
     }
 }

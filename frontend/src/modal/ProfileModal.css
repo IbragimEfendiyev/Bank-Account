@@ -1,7 +1,7 @@
 .profile-modal-overlay {
   position: fixed;
   inset: 0;
-  background: transparent; /* ❗ НЕТ затемнения */
+  background: transparent;
   z-index: 1000;
 }
 
@@ -9,29 +9,74 @@
   position: fixed;
   top: 70px;
   right: 30px;
-  width: 260px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 280px;
+  background: #1c1f2e;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
   z-index: 1001;
+  font-family: 'Sora', sans-serif;
+  color: #f1f1f1;
 }
 
 .profile-modal__title {
-  margin-bottom: 12px;
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
 }
 
 .profile-modal__close {
   position: absolute;
-  top: 8px;
-  right: 10px;
-  background: none;
+  top: 14px;
+  right: 14px;
+  background: rgba(255,255,255,0.06);
   border: none;
-  font-size: 18px;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #9ca3af;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.profile-modal__close:hover {
+  background: rgba(255,255,255,0.12);
+  color: #f1f1f1;
+}
+
+.profile-modal p {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+  color: #9ca3af;
+}
+
+.profile-modal p strong {
+  color: #d1d5db;
+  font-weight: 600;
 }
 
 .profile-modal__logout {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 8px;
+  padding: 9px;
+  border-radius: 10px;
+  border: 1px solid rgba(239,68,68,0.4);
+  background: transparent;
+  color: #f87171;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: 'Sora', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.profile-modal__logout:hover {
+  background: rgba(239,68,68,0.12);
 }
